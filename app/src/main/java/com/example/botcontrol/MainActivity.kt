@@ -5,14 +5,14 @@ import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothSocket
 import android.content.Context
 import android.content.Intent
-import android.os.AsyncTask
-import android.os.Bundle
+import android.os.*
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
+import com.example.botcontrol.MainActivity as MainActivity
 
 
 //import androidx.test.core.app.ApplicationProvider.getApplicationContext
@@ -31,6 +31,7 @@ var bluetoothAdapter: BluetoothAdapter? = null
 var deviceToTry = "1"
 var pairedDevices: Set<BluetoothDevice>?= null
 val myUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
+val looper: Looper? = null
 //val btHandler = Handler(Looper looper)
 open class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -101,12 +102,16 @@ open class MainActivity : AppCompatActivity() {
         }
         toggleTransmission.setOnClickListener {
             println(toggleTransmission.text)
+            try{
             if (toggleTransmission.text == "Manual!") {
                 toggleTransmission.setText(R.string.ToggleTransmissionAutomatic)
                 btSocket?.outputStream!!.write("Q".toByteArray())
             } else {
                 toggleTransmission.setText(R.string.ToggleTransmissionManual)
                 btSocket?.outputStream!!.write("M".toByteArray())
+            }}
+            catch(e: java.lang.Exception){
+                Toast.makeText(this,"On press toggle  ${e}",Toast.LENGTH_SHORT).show()
             }
         }
         keyA.setOnClickListener{
@@ -125,9 +130,33 @@ open class MainActivity : AppCompatActivity() {
     companion object {
 
         lateinit var appContext: Context
+        val BUNDLE_KEY = "handlerMsgBundle"
+        private val TAG = javaClass.simpleName
 
     }
     }
+
+private class recieveStream : AsyncTask<Void?, Void?, Void?>() {
+    override fun doInBackground(vararg params: Void?): Void? {
+        // TODO Auto-generated method stub
+        Looper.prepare()
+        var mHandler = Handler(){
+            val callback = Handler.Callback { message ->
+                println(message)
+                true
+            }
+            true
+        }
+        Looper.loop()
+        var bundle = Bundle()
+        var message = Message()
+        bundle.putString(MainActivity.BUNDLE_KEY,"Hi")
+        message.data = bundle
+        mHandler.sendMessage(message)
+        return null
+    }
+}
+
 private class ConnectBT: AsyncTask<Void, Void, Void>() {
     private var ConnectSuccess:Boolean = true;
     override fun onPreExecute() {
@@ -155,6 +184,7 @@ private class ConnectBT: AsyncTask<Void, Void, Void>() {
             msg("Connection Failed try again")
         }else{
             msg("Connection Successful")
+            recieveStream().execute()
             isBtConnected = true
         }
     }
