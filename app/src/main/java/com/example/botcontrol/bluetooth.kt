@@ -12,8 +12,9 @@ import android.widget.*
 import android.widget.AdapterView.OnItemClickListener
 import androidx.appcompat.app.AppCompatActivity
 import android.widget.AdapterView
+import kotlinx.android.synthetic.main.activity_main.*
+
 var listDevices: ArrayList<String> = arrayListOf()
-val EXTRA_ADDRESS: String? = null
 open class bluetooth : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,7 +23,6 @@ open class bluetooth : AppCompatActivity() {
 //        val redColor = Color.parseColor("#FF0000")
         val bluetoothAdapter: BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter()
 //        listDevicesView.setBackgroundColor(redColor)
-        val scanBtn = findViewById<Button>(R.id.scanBtn)
         val pairedDevices: Set<BluetoothDevice>? = bluetoothAdapter?.bondedDevices
         pairedDevicesList(pairedDevices,listDevicesView)
         listDevicesView.adapter = MyCustomAdapter(this, listDevices)
@@ -41,6 +41,7 @@ open class bluetooth : AppCompatActivity() {
 //        val arrayAdapter: ArrayAdapter<String> =
 //            ArrayAdapter(this, android.R.layout.simple_list_item_1, listDevices)
 //        listDevicesView.adapter = arrayAdapter
+
         listDevicesView.setOnItemClickListener { parent:AdapterView<*>, v:View, position:Int, id:Long ->
 //             Get the device MAC address, the last 17 chars in the View
             if(position == 0){
@@ -53,8 +54,12 @@ open class bluetooth : AppCompatActivity() {
             println("Selected -------> $info $address")
 //            Change the activity.
             i.putExtra(
-                EXTRA_ADDRESS,
+                "EXTRA_ADDRESS",
                 address
+            )
+            i.putExtra(
+                "INDEX",
+                position.toString()
             )
             finish()
             startActivity(i)
@@ -86,22 +91,18 @@ private class MyCustomAdapter(context: Context, items: ArrayList<String>) : Base
     }
 
     override fun getCount(): Int {
-//        TODO("Not yet Implemented")
         return items.size
     }
 
     override fun getItem(position: Int): Any {
-//        TODO("Not yet implemented")
         return "TEST STRING"
     }
 
     override fun getItemId(position: Int): Long {
-//        TODO("Not yet implemented")
         return position.toLong()
     }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-//        TODO("Not yet implemented")
         val textView = TextView(mContext)
         textView.text = items[position]
 //        textView.text = "items[positi

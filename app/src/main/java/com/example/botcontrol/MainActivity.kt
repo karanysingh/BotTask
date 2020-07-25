@@ -1,18 +1,19 @@
 package com.example.botcontrol
 
-import android.app.Activity
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
+import android.bluetooth.BluetoothSocket
+import android.content.Context
 import android.content.Intent
+import android.os.AsyncTask
 import android.os.Bundle
-import android.util.Log
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
+import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
-import kotlin.collections.ArrayList
+
 
 //import androidx.test.core.app.ApplicationProvider.getApplicationContext
 
@@ -22,23 +23,29 @@ private const val TAG = "BOT CONTROL"
 const val MESSAGE_READ: Int = 0
 const val MESSAGE_WRITE: Int = 1
 const val MESSAGE_TOAST: Int = 2
-
+val socket = null
+val address: String? = null
+var btSocket: BluetoothSocket? = null
+var isBtConnected = false
+var bluetoothAdapter: BluetoothAdapter? = null
+var deviceToTry = "1"
+var pairedDevices: Set<BluetoothDevice>?= null
+val myUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
 //val btHandler = Handler(Looper looper)
 open class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         //question  mark represents that its nullable
-
+        MainActivity.appContext = applicationContext
         val scrollData: ArrayList<String> = arrayListOf("Data\n")
         val dataBox: TextView = findViewById(R.id.textView3)
         val toggleBt: Button = findViewById(R.id.toggle)
         val toggleTransmission: Button = findViewById(R.id.transmission)
-        val bluetoothAdapter: BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter()
+        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
         var deviceName: String? = null
         var deviceHardwareAddress: String? = null
         val connectBtn: Button = findViewById(R.id.connect)
-//        val btStream: MyBluetoothService = MyBluetoothService()
         toggleBt.setOnClickListener {
             if (bluetoothAdapter == null) {
                 println("Device doesn't support Bluetooth or no device found")
@@ -50,7 +57,7 @@ open class MainActivity : AppCompatActivity() {
                 startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT)
             }
             if (bluetoothAdapter?.isEnabled == true) {
-                bluetoothAdapter.disable();
+                bluetoothAdapter!!.disable();
             }
         };
         connectBtn.setOnClickListener {
@@ -59,54 +66,110 @@ open class MainActivity : AppCompatActivity() {
                 toast.show()
             }
             if (bluetoothAdapter?.isEnabled == true) {
-                val pairedDevices: Set<BluetoothDevice>? = bluetoothAdapter?.bondedDevices
+                pairedDevices = bluetoothAdapter?.bondedDevices
                 pairedDevices?.forEach { device ->
                     deviceName = device.name
                     deviceHardwareAddress = device.address // MAC address
                 }
 //            val uuid = UUID.fromString(deviceHardwareAddress)
-                scrollData.add(pairedDevices.toString())
-                dataBox.text = scrollData.toString()
-                println("These are paired already $deviceHardwareAddress")
-                val device = pairedDevices!!.first()
-                BluetoothClient(device).start()
+                val bundle: Bundle? = intent.extras
+                deviceToTry = "1"
+                try{
+                    deviceToTry = intent.getStringExtra("INDEX")
+                    val address = intent.getStringExtra("EXTRA_ADDRESS")
+                    Toast.makeText(this, address, Toast.LENGTH_SHORT).show()
+                    scrollData.add("Trying Connecting to $address index: $deviceToTry")
+                    dataBox.text = "Trying Connecting to $address index: $deviceToTry"
+//                    BluetoothClient(pairedDevices.toList()[ind.toInt()]).start()
+                    println("BLuetooth socket: "+ btSocket)
+                }
+                catch (e: java.lang.Exception){
+                    println(e)
+                }
+                }
+                ConnectBT().execute()
+            }
+        val get:Button = findViewById(R.id.get)
+        get.setOnClickListener {
+            if (pairedDevices != null) {
+                Toast.makeText(this, "Selected ${(pairedDevices!!.toList()[deviceToTry.toInt()]).toString()}",Toast.LENGTH_SHORT).show()
+            }
+            else{
+                Toast.makeText(this, "No Devices Selected",Toast.LENGTH_SHORT).show()
+
             }
         }
         toggleTransmission.setOnClickListener {
             println(toggleTransmission.text)
             if (toggleTransmission.text == "Manual!") {
                 toggleTransmission.setText(R.string.ToggleTransmissionAutomatic)
+                btSocket?.outputStream!!.write("Q".toByteArray())
             } else {
                 toggleTransmission.setText(R.string.ToggleTransmissionManual)
+                btSocket?.outputStream!!.write("M".toByteArray())
             }
         }
-//        bluetoothAdapter?.startDiscovery()
+        keyA.setOnClickListener{
+            btSocket?.outputStream!!.write("A".toByteArray())
+        }
+        keyD.setOnClickListener{
+            btSocket?.outputStream!!.write("D".toByteArray())
+        }
+        keyS.setOnClickListener{
+            btSocket?.outputStream!!.write("S".toByteArray())
+        }
+        keyW.setOnClickListener{
+            btSocket?.outputStream!!.write("W".toByteArray())
+        }
+    }
+    companion object {
+
+        lateinit var appContext: Context
+
+    }
+    }
+private class ConnectBT: AsyncTask<Void, Void, Void>() {
+    private var ConnectSuccess:Boolean = true;
+    override fun onPreExecute() {
+        msg("Attempting to Connecting")
     }
 
-}
-
-class BluetoothClient(device: BluetoothDevice) : Thread() {
-    val uuid: UUID = UUID.fromString("8989063a-c9af-463a-b3f1-f21d9b2b827b")
-    private val socket = device.createRfcommSocketToServiceRecord(uuid)
-    override fun run() {
-        Log.i("Client", "Connecting")
-        this.socket.connect()
-
-        Log.i("Client", "Sending")
-        val outputStream = this.socket.outputStream
-        val inputStream = this.socket.inputStream
+    override fun doInBackground(vararg params: Void?): Void? {
+        println("running in background")
         try {
-            var message = "Hi"
-            outputStream.write(message.toByteArray())
-            outputStream.flush()
-            Log.i("Client", "Sent")
+            if( btSocket == null || isBtConnected){
+                val device = pairedDevices!!.toList()[deviceToTry.toInt()]
+                btSocket = device.createRfcommSocketToServiceRecord(myUUID)
+                btSocket?.connect()
+            }
+        }catch (e:Exception){
+            println(e)
+            ConnectSuccess = false
+    }
+        return null
+    }
 
-        } catch (e: Exception) {
-            Log.e("client", "cannot send", e)
-        } finally {
-            outputStream.close()
-            inputStream.close()
-            this.socket.close()
+    override fun onPostExecute(result: Void?) {
+        super.onPostExecute(result)
+        if(!ConnectSuccess){
+            msg("Connection Failed try again")
+        }else{
+            msg("Connection Successful")
+            isBtConnected = true
+        }
+    }
+    private fun msg(s:String){
+        var context = MainActivity.appContext
+        Toast.makeText(context, s, Toast.LENGTH_SHORT).show()
+    }
+    private fun Disconnect() {
+        if(btSocket!=null){
+            try{
+                btSocket!!.close()
+            }
+            catch (e:Exception){
+                msg("Error")
+            }
         }
     }
 }

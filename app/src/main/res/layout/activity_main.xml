@@ -7,7 +7,7 @@
     tools:context=".MainActivity">
 
     <ImageButton
-        android:id="@+id/imageButton4"
+        android:id="@+id/keyA"
         android:layout_width="66dp"
         android:layout_height="56dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -61,10 +61,10 @@
         app:layout_constraintVertical_bias="0.136" />
 
     <ImageButton
-        android:id="@+id/imageButton"
+        android:id="@+id/keyW"
         android:layout_width="66dp"
         android:layout_height="56dp"
-        app:layout_constraintBottom_toTopOf="@+id/imageButton2"
+        app:layout_constraintBottom_toTopOf="@+id/keyS"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.501"
         app:layout_constraintStart_toStartOf="parent"
@@ -73,7 +73,7 @@
         app:srcCompat="@android:drawable/arrow_up_float" />
 
     <ImageButton
-        android:id="@+id/imageButton2"
+        android:id="@+id/keyS"
         android:layout_width="66dp"
         android:layout_height="56dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -85,7 +85,7 @@
         app:srcCompat="@android:drawable/arrow_down_float" />
 
     <ImageButton
-        android:id="@+id/imageButton3"
+        android:id="@+id/keyD"
         android:layout_width="66dp"
         android:layout_height="56dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -108,7 +108,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" >
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/textView3"
@@ -140,7 +140,19 @@
         android:text="@string/connect"
         app:layout_constraintBottom_toTopOf="@+id/verboseTitle"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.331"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageButton2" />
+        app:layout_constraintTop_toBottomOf="@+id/keyS" />
+
+    <Button
+        android:id="@+id/get"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/get"
+        app:layout_constraintBottom_toTopOf="@+id/verboseTitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.678"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/keyS" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
