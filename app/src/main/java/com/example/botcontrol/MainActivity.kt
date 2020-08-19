@@ -2,6 +2,7 @@ package com.example.botcontrol
 
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
+import android.bluetooth.BluetoothHeadset
 import android.bluetooth.BluetoothSocket
 import android.content.Context
 import android.content.Intent
@@ -12,7 +13,9 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
-import com.example.botcontrol.MainActivity as MainActivity
+import java.util.concurrent.Executors
+import java.util.concurrent.ScheduledExecutorService
+import java.util.concurrent.TimeUnit
 
 
 //import androidx.test.core.app.ApplicationProvider.getApplicationContext
@@ -24,12 +27,13 @@ const val MESSAGE_READ: Int = 0
 const val MESSAGE_WRITE: Int = 1
 const val MESSAGE_TOAST: Int = 2
 val socket = null
-val address: String? = null
+var address: String = "00:13:EF:00:56:D9"
 var btSocket: BluetoothSocket? = null
 var isBtConnected = false
 var bluetoothAdapter: BluetoothAdapter? = null
 var deviceToTry = "1"
 var pairedDevices: Set<BluetoothDevice>?= null
+var device2Bt: BluetoothDevice? = null
 val myUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
 val looper: Looper? = null
 //val btHandler = Handler(Looper looper)
@@ -43,13 +47,14 @@ open class MainActivity : AppCompatActivity() {
         val dataBox: TextView = findViewById(R.id.textView3)
         val toggleBt: Button = findViewById(R.id.toggle)
         val toggleTransmission: Button = findViewById(R.id.transmission)
+        val devicebtn: Button = findViewById(R.id.devices)
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
         var deviceName: String? = null
         var deviceHardwareAddress: String? = null
         val connectBtn: Button = findViewById(R.id.connect)
         toggleBt.setOnClickListener {
             if (bluetoothAdapter == null) {
-                println("Device doesn't support Bluetooth or no device found")
+                Toast.makeText(this,"Device doesn't support Bluetooth or no device found",Toast.LENGTH_SHORT).show()
             }
             if (bluetoothAdapter?.isEnabled == false) {
                 val intent = Intent(this, bluetooth::class.java)
@@ -61,6 +66,15 @@ open class MainActivity : AppCompatActivity() {
                 bluetoothAdapter!!.disable();
             }
         };
+        devicebtn.setOnClickListener {
+            if (bluetoothAdapter?.isEnabled == true) {
+                val intent = Intent(this, bluetooth::class.java)
+                startActivity(intent)
+            }
+            else if (bluetoothAdapter?.isEnabled == false) {
+            Toast.makeText(this,"Enable Bluetooth first!",Toast.LENGTH_SHORT).show()
+        }
+        }
         connectBtn.setOnClickListener {
             if (bluetoothAdapter?.isEnabled == false) {
                 val toast: Toast = Toast.makeText(this, "Enable Bt first!", Toast.LENGTH_SHORT)
@@ -77,10 +91,10 @@ open class MainActivity : AppCompatActivity() {
                 deviceToTry = "1"
                 try{
                     deviceToTry = intent.getStringExtra("INDEX")
-                    val address = intent.getStringExtra("EXTRA_ADDRESS")
+                    address = intent.getStringExtra("EXTRA_ADDRESS")
                     Toast.makeText(this, address, Toast.LENGTH_SHORT).show()
-                    scrollData.add("Trying Connecting to $address index: $deviceToTry")
-                    dataBox.text = "Trying Connecting to $address index: $deviceToTry"
+                    scrollData.add("Trying Connecting to $address")
+                    dataBox.text = "Trying Connecting to $address"
 //                    BluetoothClient(pairedDevices.toList()[ind.toInt()]).start()
                     println("BLuetooth socket: "+ btSocket)
                 }
@@ -92,15 +106,21 @@ open class MainActivity : AppCompatActivity() {
             }
         val get:Button = findViewById(R.id.get)
         get.setOnClickListener {
-            if (pairedDevices != null) {
-                Toast.makeText(this, "Selected ${(pairedDevices!!.toList()[deviceToTry.toInt()]).toString()}",Toast.LENGTH_SHORT).show()
-            }
-            else{
-                Toast.makeText(this, "No Devices Selected",Toast.LENGTH_SHORT).show()
+            println("one->"+bluetoothAdapter?.getProfileConnectionState(BluetoothHeadset.HEADSET))
+            val scheduler: ScheduledExecutorService = Executors.newSingleThreadScheduledExecutor()
 
-            }
+            scheduler.scheduleAtFixedRate(Runnable {
+                println("Runnning")
+                val bufferSize = 1024
+                val buffer = ByteArray(bufferSize)
+                var data = btSocket?.inputStream?.read(buffer)
+                scrollData.add(data.toString())
+                dataBox.text = scrollData.toString()
+            }, 0, 2, TimeUnit.SECONDS)
         }
         toggleTransmission.setOnClickListener {
+
+            if (bluetoothAdapter?.isEnabled == true) {
             println(toggleTransmission.text)
             try{
             if (toggleTransmission.text == "Manual!") {
@@ -111,9 +131,10 @@ open class MainActivity : AppCompatActivity() {
                 btSocket?.outputStream!!.write("M".toByteArray())
             }}
             catch(e: java.lang.Exception){
-                Toast.makeText(this,"On press toggle  ${e}",Toast.LENGTH_SHORT).show()
-            }
+                Toast.makeText(this,"On press toggle : $e",Toast.LENGTH_SHORT).show()
+            }}
         }
+        if (isBtConnected) {
         keyA.setOnClickListener{
             btSocket?.outputStream!!.write("A".toByteArray())
         }
@@ -125,6 +146,7 @@ open class MainActivity : AppCompatActivity() {
         }
         keyW.setOnClickListener{
             btSocket?.outputStream!!.write("W".toByteArray())
+        }
         }
     }
     companion object {
@@ -167,12 +189,16 @@ private class ConnectBT: AsyncTask<Void, Void, Void>() {
         println("running in background")
         try {
             if( btSocket == null || isBtConnected){
-                val device = pairedDevices!!.toList()[deviceToTry.toInt()]
-                btSocket = device.createRfcommSocketToServiceRecord(myUUID)
+//                val device = pairedDevices!!.toList()[deviceToTry.toInt()]
+                device2Bt = bluetoothAdapter?.getRemoteDevice(address);
+                println("deivices"+pairedDevices.toString())
+                println("Deviceone"+ device2Bt.toString())
+//                println("devicetwo"+device.toString())
+                btSocket = device2Bt?.createRfcommSocketToServiceRecord(myUUID)
                 btSocket?.connect()
             }
         }catch (e:Exception){
-            println(e)
+            println("Connection Failed "+e)
             ConnectSuccess = false
     }
         return null

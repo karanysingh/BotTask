@@ -3,36 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     tools:context=".MainActivity">
-
-    <ImageButton
-        android:id="@+id/keyA"
-        android:layout_width="66dp"
-        android:layout_height="56dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.31"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/transmission"
-        app:layout_constraintVertical_bias="0.192"
-        app:srcCompat="@android:drawable/ic_media_rew" />
-
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="460dp"
-        android:layout_height="52dp"
-        android:background="#300087"
-        android:text="@string/title"
-        android:textAlignment="center"
-        android:textColor="@android:color/white"
-        android:textSize="30sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.51"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" />
 
     <Button
         android:id="@+id/toggle"
@@ -42,13 +14,14 @@
         android:textColor="@android:color/background_light"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView"
-        app:layout_constraintVertical_bias="0.044" />
+        app:layout_constraintTop_toBottomOf="@+id/transmission"
+        app:layout_constraintVertical_bias="0.0" />
 
     <Button
         android:id="@+id/transmission"
+        style="@android:style/Widget.Material.Light.Button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/ToggleTransmissionAutomatic"
@@ -57,32 +30,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView"
-        app:layout_constraintVertical_bias="0.136" />
-
-    <ImageButton
-        android:id="@+id/keyW"
-        android:layout_width="66dp"
-        android:layout_height="56dp"
-        app:layout_constraintBottom_toTopOf="@+id/keyS"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.501"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/transmission"
-        app:layout_constraintVertical_bias="0.333"
-        app:srcCompat="@android:drawable/arrow_up_float" />
-
-    <ImageButton
-        android:id="@+id/keyS"
-        android:layout_width="66dp"
-        android:layout_height="56dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/transmission"
-        app:layout_constraintVertical_bias="0.306"
-        app:srcCompat="@android:drawable/arrow_down_float" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.023" />
 
     <ImageButton
         android:id="@+id/keyD"
@@ -93,30 +42,97 @@
         app:layout_constraintHorizontal_bias="0.698"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/transmission"
-        app:layout_constraintVertical_bias="0.192"
+        app:layout_constraintVertical_bias="0.253"
         app:srcCompat="@android:drawable/ic_media_ff" />
+
+    <Button
+        android:id="@+id/get"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/get"
+        android:textColor="@android:color/white"
+        app:layout_constraintBottom_toTopOf="@+id/verboseTitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.678"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/keyS"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <ImageButton
+        android:id="@+id/keyS"
+        android:layout_width="66dp"
+        android:layout_height="56dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.399"
+        app:srcCompat="@android:drawable/arrow_down_float" />
+
+    <ImageButton
+        android:id="@+id/keyA"
+        android:layout_width="66dp"
+        android:layout_height="56dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.31"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/transmission"
+        app:layout_constraintVertical_bias="0.253"
+        app:srcCompat="@android:drawable/ic_media_rew" />
+
+    <Button
+        android:id="@+id/connect"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/connect"
+        android:textColor="@android:color/white"
+        app:layout_constraintBottom_toTopOf="@+id/verboseTitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.331"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/keyS"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <ImageButton
+        android:id="@+id/keyW"
+        android:layout_width="66dp"
+        android:layout_height="56dp"
+        app:layout_constraintBottom_toTopOf="@+id/keyS"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/transmission"
+        app:layout_constraintVertical_bias="0.727"
+        app:srcCompat="@android:drawable/arrow_up_float" />
 
     <ScrollView
         android:id="@+id/verbose"
         android:layout_width="416dp"
         android:layout_height="241dp"
-        android:layout_marginTop="284dp"
+        android:scrollbarSize="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/transmission">
+        app:layout_constraintTop_toBottomOf="@+id/keyS"
+        app:layout_constraintVertical_bias="1.0">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/textView3"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="256dp"
+                android:background="@android:color/black"
+                android:fontFamily="monospace"
                 android:text="@string/sampletext"
                 android:textAlignment="center"
-                android:textSize="20sp" />
+                android:textColor="@android:color/holo_green_light"
+                android:textSize="10sp" />
         </LinearLayout>
     </ScrollView>
 
@@ -134,25 +150,15 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/connect"
+        android:id="@+id/devices"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/connect"
-        app:layout_constraintBottom_toTopOf="@+id/verboseTitle"
+        android:layout_marginTop="48dp"
+        android:text="Select Device"
+        android:textColor="@android:color/white"
+        app:layout_constraintBottom_toTopOf="@+id/keyW"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.331"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/keyS" />
-
-    <Button
-        android:id="@+id/get"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/get"
-        app:layout_constraintBottom_toTopOf="@+id/verboseTitle"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.678"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/keyS" />
+        app:layout_constraintTop_toTopOf="@+id/toggle" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
