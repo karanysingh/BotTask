@@ -5,3 +5,4 @@
 * 3)When on autonomous it will detect line on ground and follow it.
 * 4)On manual the user will be able to direct bot in a certain direction (Example 45 degrees North) or with a controller.
 * 5)The bot should live broadcast its direction and orientation (with respect to XY plane) to the application
+# Bluetooth Controlled Bot
